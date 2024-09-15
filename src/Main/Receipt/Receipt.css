@@ -1,0 +1,13 @@
+.reciept-container{
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    
+}
+.receipt-param 
+{
+    display: flex;
+    width: 4vw;
+    
+
+}

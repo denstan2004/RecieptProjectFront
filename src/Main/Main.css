@@ -1,0 +1,58 @@
+.WarehouseCheckbox {
+    display: flex;
+    flex-direction: column;
+    height: 70vh; /* Set height to 70% of the viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border around the container */
+    padding: 10px; /* Optional: Add some padding */
+    width: 20vw;
+}
+.WorkPlaceCheckbox{
+    display: flex;
+    flex-direction: column;
+    height: 70vh; /* Set height to 70% of the viewport height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border around the container */
+    padding: 10px; /* Optional: Add some padding */
+    width: 20vw;
+}
+.Checkboxes{
+    display: flex;
+    flex-direction: row;
+}
+.Buttons{
+    display: flex;
+    flex-direction: row;
+}
+.button-warehouse{
+    width: 20vw;
+    display: flex;
+    margin-top: 1vh;
+    justify-content: center;
+}
+.button-workplace{
+    width: 20vw;
+    display: flex;
+    margin-top: 1vh;
+    justify-content: center;
+}
+.receipt-info {
+    position: fixed; /* Ensures the div stays fixed and overlays content */
+    top: 0;          /* Positions the element at the top */
+    left: 0;         /* Positions the element at the left */
+    width: 100vw;    /* Full width of the viewport */
+    height: 100vh;   /* Full height of the viewport */
+    background-color: rgb(255, 255, 255); /* Semi-transparent background for overlay effect */
+    z-index: 999;    /* High z-index to ensure it appears on top of other content */
+    display: flex;   /* Center the content vertically and horizontally */
+    justify-content: center;
+    padding: 20px;   /* Optional: Add some padding inside the div */
+}
+.receipt-info-close-button
+{ 
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 6vh;
+    width: 8vw;
+}
