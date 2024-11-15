@@ -1,13 +1,29 @@
-function WorkPlaceCheck({workplace, onSelectionChange}){
-
-
+import { useState,useEffect } from "react";
+function WorkPlaceCheck({workplace, onSelectionChange,selectedWorkPlaces}){
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        if (selectedWorkPlaces.size !== 0) {
+            console.log(workplace.idwarehouse);
+            console.log(selectedWorkPlaces);
+            // Use .has() instead of .some() for Set
+            if (selectedWorkPlaces.has(workplace.idWorkplace)) { 
+                console.log(true);
+                setChecked(true);
+            } else {
+                setChecked(false); // Reset if not found
+            }
+        }
+    }, [selectedWorkPlaces, workplace.idwarehouse]);
     const checkboxChangeHandle = (event) => {
-        onSelectionChange(workplace.idWorkplace, event.target.checked); // Notify parent about change
+        setChecked(true);
+        console.log(selectedWorkPlaces)
+        onSelectionChange(workplace.idWorkplace, event.target.checked);
     };
 
     return (
-        <label  >
+        <label >
             <input 
+                checked ={checked}
                 type="checkbox"
                 value={workplace.idWorkplace} // assuming warehouse has an id
                 onChange={checkboxChangeHandle}

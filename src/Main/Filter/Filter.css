@@ -1,0 +1,40 @@
+.filter-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 1em;
+  }
+  
+  .filter-close-button-container {
+    
+    position: absolute; 
+    right: 10px;
+    top: 10px;
+  }
+  
+  .fillter-button {
+    background-color: #565656;
+    border-radius: 25px;
+    height: 3vh;
+    width: 7vw;
+    color: white;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .fillter-button:hover {
+    background-color: #4a4a4a;
+  }
+  
+  .fillter-button:focus {
+    outline: none;
+  }
+  
+  .fillter-client{
+    display: flex;
+    flex-direction: column;
+  }

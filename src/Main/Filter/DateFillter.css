@@ -1,0 +1,16 @@
+.receipt-button-date{
+    background-color: #565656;
+        -webkit-border-radius: 25px;
+        -moz-border-radius: 25px;
+        border-radius: 25px;       
+         height: 3vh;
+        width: 8vw;
+        margin-top: 1vh;
+        color: white;
+}
+.date-fillter-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

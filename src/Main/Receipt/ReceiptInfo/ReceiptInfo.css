@@ -3,3 +3,123 @@
     flex-direction: row;
     
 }
+.receipt-info-wares {
+  display: flex;
+}
+
+.receipt-info-table {
+    margin-top: 5vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+.receipt-info-wares-item {
+  font-size: 2.2vh;
+  flex-grow: 1; /* Всі елементи ростуть однаково */
+  flex-basis: 10%; /* Встановлює однакову базову ширину для всіх елементів */
+  justify-content: center;
+  align-items: flex-end;
+  border: 1px solid #000000;
+  text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-wares-item-name {
+    font-size: 2.2vh;
+    flex-grow: 3; /* Всі елементи ростуть однаково */
+    flex-basis: 30%; /* Встановлює однакову базову ширину для всіх елементів */
+    justify-content: center;
+    align-items: flex-end;
+    border: 1px solid #000000;
+    text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-wares-item-tittle{
+    font-weight: bold;
+    font-size: 2.2vh;
+  flex-grow: 1; /* Всі елементи ростуть однаково */
+  flex-basis: 10%; /* Встановлює однакову базову ширину для всіх елементів */
+  justify-content: center;
+  align-items: flex-end;
+  border: 1px solid #000000;
+  text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-wares-item-tittle-name{
+  font-weight: bold;
+  font-size: 2.2vh;
+  flex-grow: 3; /* Всі елементи ростуть однаково */
+  flex-basis: 30%; /* Встановлює однакову базову ширину для всіх елементів */
+  justify-content: center;
+  align-items: flex-end;
+  border: 1px solid #000000;
+  text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-events{
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+.receipt-info-events-item{
+    font-size: 2.4vh;
+    flex-grow: 3; /* Всі елементи ростуть однаково */
+    flex-basis: 30%; /* Встановлює однакову базову ширину для всіх елементів */
+    justify-content: center;
+    align-items: flex-end;
+    border: 1px solid #000000;
+    text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-events-item-tittle {
+    font-size: 2.4vh;
+    font-weight: bold   ;
+    flex-grow: 3; /* Всі елементи ростуть однаково */
+    flex-basis: 30%; /* Встановлює однакову базову ширину для всіх елементів */
+    justify-content: center;
+    align-items: flex-end;
+    border: 1px solid #000000;
+    text-align: center; /* Вирівнювання тексту по центру */
+}
+.receipt-info-container{
+    width: 100%;
+}
+.receipt-info-button{
+background-color: #565656;
+font-weight: bold;
+font-size: 2vh;
+border:2px solid #939393;
+height: 3vh;
+width: 5vw;
+color: white;
+}
+.receipt-info-sum-total{
+  font-weight: bold;
+  font-size: 4vh;
+}
+.receipt-info-name{
+  font-weight: bold;
+  font-size: 4vh;
+}
+.receipt-info-button-change{
+  background-color: #31b683;
+  font-weight: bold;
+  font-size: 2vh;
+  border:2px solid #939393;
+  height: 3vh;
+  width: 8vw;
+  color: white;
+}
+.receipt-info-button-delete{
+  background-color: #e95b5b;
+  font-weight: bold;
+  font-size: 2vh;
+  border:2px solid #939393;
+  height: 3vh;
+  width: 8vw;
+  color: white;
+}
+.message-container{
+  z-index: 1000;
+  justify-content: center;
+  position: absolute;
+  top: 20vh;
+  left: 35vw;
+
+}

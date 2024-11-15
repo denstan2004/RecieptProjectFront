@@ -7,7 +7,7 @@ import Receipt from "./Receipt/Receipt";
 import ReceiptInfo from "./Receipt/ReceiptInfo/ReceiptInfo";
 import Filter from "./Filter/Filter";
 import DateFilter from "./Filter/DateFilter";
-
+import "./Receipt/Receipt.css"
 function Main(){
     const [allWarehouses,setAllWarehouses] = useState([]); //всі склади і заклади
     const [selectedWarehouses,setSelectedWarehouses] = useState(new Set()); // обрані склади заклади
@@ -15,15 +15,16 @@ function Main(){
     const [fillterVisibility, setFillterVisibility]=useState (false);// видимість панелі склади і заклади
     const [workPlaceVisivility, setWorkPlaceVisibility]=useState(false); // видимиість вікна з касами
     const [dateFillterVisivility, setDateFillterVisibility]=useState(false); // видимиість вікна з касами
- //   const [dateStart,setDateStart]= useState();
-   // const [dateEnd,setDateEnd]=useState();
+    const [dateStart,setDateStart]= useState();
+    const [dateEnd,setDateEnd]=useState();
     const [allWorkPlaces, setAllWorkPlaces]=useState([]);// всі робочі місця 
-    const [selectedWorkPlaces,setSelectedWorkPlaces]=useState(); // обрані робочі місця
+    const [selectedWorkPlaces,setSelectedWorkPlaces]=useState(new Set()); // обрані робочі місця
     const [receipts,setReceipts]=useState([]); // всі чеки 
     const [fillteredReceipts,setFillteredReceipts]=useState([]); // відфільтровані чеки
     const [selectedreciept,SetSelectedReciept]=useState(undefined); // обраний чек 
     const [selectedrecieptVisibility,setSelectedrecieptVisibility]= useState(false); // видимість вінка обраного чека 
     const [selectedReceiptInfo, setSelectedReceiptInfo]= useState(); // інформація обраного чекa
+    const [userSelectedReceipts,setUserSelectedReceipts]=useState([]);  // чеки до 1с
     localStorage.setItem("back-prefix", "https://localhost:59527/api/Spar");
 
     useEffect(() => {
@@ -31,7 +32,7 @@ function Main(){
     }, []);
 
     const fetchWarehouses = async () => {
-        axios.get(`${localStorage.getItem("back-prefix")}/Get/All/Warehouses`, {
+            axios.get(`${localStorage.getItem("back-prefix")}/Get/All/Warehouses`, {
             withCredentials: true 
         })
         .then(response => {
@@ -82,21 +83,11 @@ function Main(){
         });
     };
     const HandleWorkPlaceButtonClick= async () => {
-        await axios.post(`${localStorage.getItem("back-prefix")}/Get/Last/ReceiptByWorkPlace`, 
-            Array.from(selectedWorkPlaces) // Send the array directly
-        )
-        .then(response => {
-            setReceipts(response.data);
-            setFillteredReceipts(response.data)
-            console.log(response.data);
-            setWarehouseVisibility(false);
-            setWorkPlaceVisibility(false);
-        })
-        .catch(error => {
-            console.error('There was an error!', error);
-        });
+        
+       setDateFillterVisibility(true);
     };
     const HandleWarehouseButtonClick = async () => {
+        setSelectedWorkPlaces(new Set());
         await axios.post(`${localStorage.getItem("back-prefix")}/Get/All/WorkplacesById`, 
             Array.from(selectedWarehouses) // Send the array directly
         )
@@ -149,6 +140,8 @@ function Main(){
     }
     const setDate = (dateStart, dateEnd) => {
         // Create the payload object with the required fields
+        setDateStart(dateStart);
+        setDateEnd( dateEnd);
         const payload = {
             WorkplacesIds: Array.from(selectedWorkPlaces), // Convert selectedWorkPlaces Set to Array
             begin: dateStart, // Assuming dateStart is in ISO 8601 format
@@ -156,7 +149,7 @@ function Main(){
         };
     
         // Send the POST request with the payload
-        axios.post(`${localStorage.getItem("back-prefix")}/Get/All/ReceiptsByDate`, payload)
+        axios.post(`${localStorage.getItem("back-prefix")}/Get/All/ReceiptsByDate`, payload,{ withCredentials: true })
             .then(response => {
                 setReceipts(response.data);
                 setFillteredReceipts(response.data);
@@ -169,16 +162,83 @@ function Main(){
                 console.error('There was an error!', error);
             });
     }
+    const userSelect = (receipt) => {
+        setUserSelectedReceipts((prev) => {
+            const isReceiptSelected = prev.findIndex(item => 
+                item.codePeriod === receipt.codePeriod &&
+                item.idWorkplace === receipt.idWorkplace &&
+                item.codeReceipt === receipt.codeReceipt
+            ) !== -1;
+    
+            if (isReceiptSelected) {
+                // Якщо чек вже є в масиві, видаляємо його
+                return prev.filter(item => 
+                    !(item.codePeriod === receipt.codePeriod &&
+                    item.idWorkplace === receipt.idWorkplace &&
+                    item.codeReceipt === receipt.codeReceipt)
+                );
+            } else {
+                // Якщо чека немає, додаємо його
+                return [...prev, receipt];
+            }
+        });
+    };
     
   
+    const handleSend1c = async () => {
+        try {
+            // Масив промісів для усіх POST запитів
+            const promises = userSelectedReceipts.map(async (element) => {
+                const payload = {
+                    idWorkplace: element.idWorkplace,
+                    codePeriod: element.codePeriod,
+                    codeReceipt: element.codeReceipt
+                };
+                console.log(payload);
     
+                // Виконуємо POST запит для кожного елемента
+                const response = await axios.post(`https://localhost:59527/SendReceipt1C`, payload);
+    
+                if (response.status !== 200) {
+                    throw new Error('Error sending receipt to 1C');
+                }
+            });
+    
+            // Використовуємо Promise.all, щоб дочекатися виконання усіх запитів
+            await Promise.all(promises);
+    
+            // Якщо всі запити успішні, показуємо повідомлення про успіх
+            alert("Відправлено в 1с");
+        } catch (error) {
+            // Якщо хоча б один запит не вдався, показуємо помилку
+            console.error('There was an error!', error);
+            alert("Помилка при відправленні в 1с");
+        }
+    };
+     const handleCheck1c =()=>{
+        axios.get(`https://localhost:59527/GetInfo`, {
+            withCredentials: true 
+        })
+        .then(response => {
+            if (response.status === 200) {
+                alert(response.data);
+            }
+        })
+        .catch(error => {
+            console.error('There was an error!', error);
+        });
+    };
+     
     return (
         <div>
             <div className="Buttons">
-                <button onClick={handleWarehouseShow}>SHOW Warehouse</button>
-                <button onClick={handleWorkplaceShow}>SHOW Workplace</button>
-                <button onClick={handleFillterShow}>SHOW Fillter</button>
-                <button onClick={handleDateFillterShow}>SHOW Date Fillter</button>
+                <button className="button-81" onClick={handleWarehouseShow}>SHOW Warehouse</button>
+                <button className="button-81" onClick={handleWorkplaceShow}>SHOW Workplace</button>
+                <button className="button-81" onClick={handleDateFillterShow}>SHOW Date Fillter</button>
+                <button className="button-81" onClick={handleFillterShow}>SHOW Fillter</button>
+                <button className="button-81" onClick={handleSend1c}>Send to 1C</button>
+                <button className="button-81" onClick={handleCheck1c}>Check 1C</button>
+
 
             </div>
             <div className="Checkboxes">
@@ -187,50 +247,64 @@ function Main(){
                    
                     <div className="WarehouseCheckbox">
                        {allWarehouses.map(warehouse => (
-                            <WarehouseCheck key={warehouse.id} onSelectionChange={handleWarehouseSelection} warehouse={warehouse} />
+                            <WarehouseCheck selectedWarehouses={selectedWarehouses}  key={warehouse.id} onSelectionChange={handleWarehouseSelection} warehouse={warehouse} />
                       ))}
                     </div>
                     <div className="button-warehouse">
-                        <button  onClick={HandleWarehouseButtonClick}>Обрати warehouse</button>
+                        <button className="receipt-button" onClick={HandleWarehouseButtonClick}>Обрати warehouse</button>
                     </div>
                 </div>
                 :
                 <div></div>
                 }
                 { workPlaceVisivility ?
-                <div  className="warehouseCheckcontainer">
+                <div  className="workplaceCheckcontainer">
                      <div className="WorkPlaceCheckbox">
                          {allWorkPlaces.map(workplace => (
-                           <WorkplaceCheck key={workplace.id} onSelectionChange={handleWorkplaceSelection} workplace={workplace} />
+                           <WorkplaceCheck selectedWorkPlaces={selectedWorkPlaces} key={workplace.id} onSelectionChange={handleWorkplaceSelection} workplace={workplace} />
                            ))}
                     </div>
                     <div className="button-workplace">
-                         <button  onClick={HandleWorkPlaceButtonClick}>Обрати workplace</button>
+                         <button className="receipt-button"   onClick={HandleWorkPlaceButtonClick}>Обрати workplace</button>
                     </div>
                 </div>
                 :
                 <div></div>
                 }
                 { dateFillterVisivility ?
-                <div  className="warehouseCheckcontainer">
-                     <DateFilter setDate={setDate}></DateFilter>
+                <div  className="dateFilterCheckcontainer">
+                     <DateFilter start={dateStart} end={dateEnd} setDate={setDate}></DateFilter>
                 </div>
                 :
                 <div></div>
                 }
                  { fillterVisibility ?
-                <div  className="warehouseCheckcontainer">
-                   <Filter  setFltrdReceipts ={setFltrdReceipts }Receipts={receipts}></Filter>
+                <div  className="fillterCheckcontainer">
+                   <Filter handleFillterShow={handleFillterShow} workplace={selectedWorkPlaces} dateStart={dateStart} dateEnd={dateEnd} setFilteredReceipts={setFltrdReceipts}></Filter>
                 </div>
                 :
                 <div></div>
                 }
             </div>
            {fillteredReceipts.length!=0 ?
+           
+            <div>
+            <div className="reciept-container">
+                    <div className="receipt-param-type-name">Час створення</div>
+                    <div className="receipt-param-type">Тип чеку</div>
+                     <div className="receipt-param-type">Ціна </div>
+                    <div className="receipt-param-type">Код в 1С</div>
+                     <div className="receipt-param-type-name">Назва каси</div>
+                     <div className="receipt-param-type-name">Назва точки</div>
+                     <div className="receipt-param-type-name">Клієнт</div>
+                     <div className="receipt-param-type">Спосіб оплати</div>
+                     <div className="receipt-param-type">Інформація чека</div>
+            </div>
            <div>
                    {fillteredReceipts.map((receipt, index) => (
-                <Receipt setReceipt={setReceipt}  key={index} receipt={receipt} />
+                <Receipt userSelect={userSelect} setReceipt={setReceipt}  key={index} receipt={receipt} />
                     ))}
+           </div>
            </div>
            :
            <div>
@@ -239,8 +313,11 @@ function Main(){
            }
            { selectedrecieptVisibility && selectedReceiptInfo ? (
                  <div className="receipt-info">
-                    <button className="receipt-info-close-button" onClick={CloseReceiptInfo}>закрити</button>
-                    <ReceiptInfo ReceiptInfo={selectedReceiptInfo}></ReceiptInfo>
+                    <div className="receipt-info-close-button">
+                        <button className="button-81"  onClick={CloseReceiptInfo}>закрити</button> 
+                    </div>
+                  
+                    <ReceiptInfo Selectedreciept={selectedreciept} ReceiptInfo={selectedReceiptInfo}></ReceiptInfo>
              </div>
  )
                 : 
